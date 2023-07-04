@@ -14,7 +14,7 @@ g = 9.8
 # a = m*g/m
 
 def XYdisplacement(m,vbX,vbY,t,timeStep,x,y):
-    # sadece body ile verileri derle
+    # sadece body den verileri çek
     x+=timeStep*(vbX)
     f = m * g
     a = f/m
