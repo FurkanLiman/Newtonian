@@ -6,6 +6,7 @@ import physic
 
 class body:
     def __init__(self, mass, radius, konumX, konumY, vb,vbAngle):
+        vbAngle=-vbAngle
         self.mass= mass
         self.volume= (4/3)*(math.pi*math.pow(radius,3))
         self.konumX = konumX
@@ -19,7 +20,7 @@ class body:
         vbY=vb*math.sin(vbRadianA)
         return vbX,vbY 
 # b1: 1kg, r = 1m
-m,r,konumX,konumY,vb,vbAngle=1,10,00,500,-50,135
+m,r,konumX,konumY,vb,vbAngle=1,10,00,500,50,45
 b1 = body(m, r, konumX, konumY,vb,vbAngle)
 
 v=0
@@ -52,7 +53,8 @@ while True:
 
     temizleCiz()
 
-    x,y,vy,vx=physic.XYdisplacement(m,b1.vbX,b1.vbY,t,timeStep,x,y)
+    x,y,vy,vx=physic.XYdisplacement(b1,t,timeStep)
+    
     xint=int(x)
     yint=int(y)
     Vxint=int(vx)
