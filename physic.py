@@ -13,8 +13,13 @@ g = 9.8
 # a = f/m
 # a = m*g/m
 
-def XYdisplacement(m,vbX,vbY,t,timeStep,x,y):
-    # sadece body den verileri çek
+def XYdisplacement(body,t,timeStep):
+
+    x=body.konumX
+    y=body.konumY
+    m=body.mass
+    vbX=body.vbX
+    vbY=body.vbY
     x+=timeStep*(vbX)
     f = m * g
     a = f/m
