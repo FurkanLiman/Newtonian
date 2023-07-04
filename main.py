@@ -57,7 +57,7 @@ while True:
     yint=int(y)
     Vxint=int(vx)
     Vyint=int(vy)
-    vint=int(v)
+    vint=int(math.sqrt((vx**2)+(vy**2)))
     
 
     b1.konumX=xint
