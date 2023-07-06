@@ -9,14 +9,21 @@ g = 9.8
 # mars 3.71
 # earth 9.8
 
-# f = ma
-# a = f/m
-# a = m*g/m
 
-def XYdisplacement(body,t,timeStep):
+def findPeriodPendelum(L):
+    T=2*math.pi*math.sqrt((L/g))
+    return T
 
-    x=body.konumX
-    y=body.konumY
+def XYdisplacementPendelum(T,Qmaks,t,L):
+    Q = Qmaks*math.cos((((2*math.pi)/T)*t))
+    print(f"{Q}         {t}     {Qmaks}")
+    x=L*math.sin(Q)
+    y=L*math.cos(Q)
+    return Q,x,y
+
+def XYdisplacementFreeFall(body,t,timeStep):
+    x=body.coorX
+    y=body.coorY
     m=body.mass
     vbX=body.vbX
     vbY=body.vbY
@@ -30,8 +37,8 @@ def XYdisplacement(body,t,timeStep):
     return x,y,vy,vbX
 def drawRoute(body,t,timeStep,space):
     pathXY=[]
-    x=body.konumX
-    y=body.konumY
+    x=body.coorX
+    y=body.coorY
     m=body.mass
     vbX=body.vbX
     vbY=body.vbY
