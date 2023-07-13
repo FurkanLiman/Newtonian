@@ -1,7 +1,9 @@
 # Newtonian
 
-It animates the two-axis Free Falls in the coordinate system with the openCV module.
+It animates the two-axis Free Falls and Pendulum motion in the coordinate system with the openCV module.
 
-![image](https://github.com/FurkanLiman/Newtonian/assets/71287062/ea728583-6c6a-41f0-84df-4e9a4885da9b)
+### Pendulum
+![pendulum](https://github.com/FurkanLiman/Newtonian/assets/71287062/c026e9f0-cd40-45be-adfb-783347c275ba)
 
-![image](https://github.com/FurkanLiman/Newtonian/assets/71287062/d7ca0040-9aa8-466d-9a0b-5915a32b53ba)
+### FreeFall
+![freefall](https://github.com/FurkanLiman/Newtonian/assets/71287062/44aee2d1-4a21-4b19-9ccd-99fb2f02c660)
