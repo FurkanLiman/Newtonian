@@ -4,15 +4,16 @@ It animates the two-axis Free Falls and Pendulum motion in the coordinate system
 
 ### FreeFall
 
-| ![FreeFall](https://github.com/FurkanLiman/Newtonian/assets/71287062/8f143d70-50ea-4873-8e38-8d8cba2ec31e)  | ![FreeFall1](https://github.com/FurkanLiman/Newtonian/assets/71287062/31a3c55a-c4d3-4649-ae64-17a8c09acf03) |
+|  ![FreeFall1](https://github.com/FurkanLiman/Newtonian/assets/71287062/93bcdc90-4e78-451b-9d93-176237d0c1e5)  |  ![FreeFall1](https://github.com/FurkanLiman/Newtonian/assets/71287062/31a3c55a-c4d3-4649-ae64-17a8c09acf03)  |
 | ------------- | ------------- |
 
 
 ### Pendelum
-| ![Pendelum](https://github.com/FurkanLiman/Newtonian/assets/71287062/8bf239a8-0048-4f9c-bf7c-dfecf27c3019) | ![Pendelum](https://github.com/FurkanLiman/Newtonian/assets/71287062/9de633bd-57c5-4662-9815-b4e3f7fcf550) |
+|  ![Pendelum1](https://github.com/FurkanLiman/Newtonian/assets/71287062/295708a4-4a4f-4bcd-aae7-f2651c4e5f69)  |  ![Pendelum](https://github.com/FurkanLiman/Newtonian/assets/71287062/9de633bd-57c5-4662-9815-b4e3f7fcf550)  |
 | ------------- | ------------- |
 
 ### Double Pendelum
 
-| ![DoublePendelum](https://github.com/FurkanLiman/Newtonian/assets/71287062/e9a8478d-1b32-4c40-8c56-9fb8c3ceb373) | ![DoublePendelum](https://github.com/FurkanLiman/Newtonian/assets/71287062/88fe4cfc-f639-422a-a530-41a962641a88) |
+
+|  ![DoublePendelum1](https://github.com/FurkanLiman/Newtonian/assets/71287062/3c52d29b-94b5-4f67-a0ea-5b99f22c9876)  |  ![DoublePendelum](https://github.com/FurkanLiman/Newtonian/assets/71287062/88fe4cfc-f639-422a-a530-41a962641a88)  |
 | ------------- | ------------- |
