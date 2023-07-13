@@ -3,7 +3,11 @@
 It animates the two-axis Free Falls and Pendulum motion in the coordinate system with the openCV module.
 
 ### FreeFall
-![FreeFall](https://github.com/FurkanLiman/Newtonian/assets/71287062/8f143d70-50ea-4873-8e38-8d8cba2ec31e)
+
+| ------------- | ------------- |
+| ![FreeFall](https://github.com/FurkanLiman/Newtonian/assets/71287062/8f143d70-50ea-4873-8e38-8d8cba2ec31e)  | ![FreeFall](https://github.com/FurkanLiman/Newtonian/assets/71287062/8f143d70-50ea-4873-8e38-8d8cba2ec31e)  |
+| ------------- | ------------- |
+
 ![FreeFall](https://github.com/FurkanLiman/Newtonian/assets/71287062/42baae29-fd43-490c-98b0-46a40a31f136)
 
 ### Pendelum
