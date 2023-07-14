@@ -99,9 +99,11 @@ class Body:
         cv2.putText(space,f"a(accel.)=  {a:.3f}",(20,60),cv2.FONT_HERSHEY_SIMPLEX,0.5,(255,255,255),1)
         cv2.putText(space,f"t(time)  =  {t:.3f}",(20,80),cv2.FONT_HERSHEY_SIMPLEX,0.5,(255,255,255),1)
         if realOrStep==1:
-            cv2.putText(space,"Real Time ON",(20,100),cv2.FONT_HERSHEY_SIMPLEX,0.5,(10,10,225),1)
+            cv2.putText(space,"Real Time ON",(20,100),cv2.FONT_HERSHEY_SIMPLEX,0.5,(255,10,10),1)
         elif realOrStep==0:
             cv2.putText(space,"Time Step ON",(20,100),cv2.FONT_HERSHEY_SIMPLEX,0.5,(10,225,10),1)
+        elif realOrStep ==2 :
+            cv2.putText(space,"Stopped",(20,100),cv2.FONT_HERSHEY_SIMPLEX,0.5,(10,10,255),1)
         drawPathPendelum(space,xyL)
     
     def pendelumAnimation(self):
@@ -112,6 +114,9 @@ class Body:
         def Qchange(a):
             Qs = a * math.pi / 180  
             self.Qmax=Qs
+        def rSS(a):
+            if a==2:
+                self.timeStep=0
         cv2.namedWindow("TrackBars")
         cv2.resizeWindow("TrackBars",640,360)
         cv2.createTrackbar("mass","TrackBars",1,25,empty)
@@ -120,8 +125,8 @@ class Body:
         cv2.createTrackbar("Len","TrackBars",400,1000,empty)
         cv2.createTrackbar("tailLen","TrackBars",200,800,empty)
         cv2.createTrackbar("TimeStep","TrackBars",5,100,empty)
-        cv2.createTrackbar("RealTime","TrackBars",0,1,empty)
-        cv2.createTrackbar("Open_Close","TrackBars",1,1,empty)
+        cv2.createTrackbar("RealTime","TrackBars",2,2,rSS)
+        cv2.createTrackbar("Stop","TrackBars",1,1,empty)
         cv2.setTrackbarMin("TimeStep","TrackBars",1)
         cv2.setTrackbarMin("mass","TrackBars",1)
         cv2.setTrackbarMin("g","TrackBars",1)
@@ -143,7 +148,7 @@ class Body:
                 physic.g = cv2.getTrackbarPos("g","TrackBars")/10
                 self.Len = cv2.getTrackbarPos("Len","TrackBars")
                 self.tailLen = cv2.getTrackbarPos("tailLen","TrackBars")
-                Close = cv2.getTrackbarPos("Open_Close","TrackBars")
+                Close = cv2.getTrackbarPos("Stop","TrackBars")
                 Body.timeStep = cv2.getTrackbarPos("TimeStep","TrackBars")/100
                 realOrStep = cv2.getTrackbarPos("RealTime","TrackBars")
                  
@@ -219,7 +224,6 @@ class Body:
                     xyL.remove(xyL[i])
         except:
             pass
-        
         cv2.line(space1,(500,500),(x1,y1),(200,200,255),1)
         cv2.line(space1,(x1,y1),(x2,y2),(200,255,200),2)  
         cv2.circle(space1,(x1,y1),5,(255,0,0),self.m1)
@@ -230,11 +234,16 @@ class Body:
         cv2.putText(space1,f"Q1V=  {self.Q1V:.3f}",(20,60),cv2.FONT_HERSHEY_SIMPLEX,0.5,(255,255,255),1)
         cv2.putText(space1,f"Q2V=  {self.Q2V:.3f}",(20,80),cv2.FONT_HERSHEY_SIMPLEX,0.5,(255,255,255),1)
         if realOrStep==1:
-            cv2.putText(space1,"Real Time ON",(20,100),cv2.FONT_HERSHEY_SIMPLEX,0.5,(10,10,225),1)
+            cv2.putText(space1,"Real Time ON",(20,100),cv2.FONT_HERSHEY_SIMPLEX,0.5,(255,10,10),1)
         elif realOrStep==0:
             cv2.putText(space1,"Time Step ON",(20,100),cv2.FONT_HERSHEY_SIMPLEX,0.5,(10,225,10),1)
+        elif realOrStep ==2 :
+            cv2.putText(space1,"Stopped",(20,100),cv2.FONT_HERSHEY_SIMPLEX,0.5,(10,10,255),1)
                   
-    def doublePendelumAnimation(self):      
+    def doublePendelumAnimation(self):
+        t=Body.t
+        tailLen=self.tailLen
+        
         m1=self.m1
         m2=self.m2
         L1=self.L1
@@ -243,6 +252,8 @@ class Body:
         Q2=self.Q2
         Q1V=self.Q1V
         Q2V=self.Q2V
+        
+        timeStep=self.timeStep
 
         def empty(a):
             pass    
@@ -252,19 +263,22 @@ class Body:
         def Qchange2(a):
             Qs = a * math.pi / 180  
             self.Q2=Qs
+        def rSS(a):
+            if a==2:
+                self.timeStep = 0
         cv2.namedWindow("TrackBarsDouble")
         cv2.resizeWindow("TrackBarsDouble",640,500)
-        cv2.createTrackbar("mass1","TrackBarsDouble",2,25,empty)
-        cv2.createTrackbar("mass2","TrackBarsDouble",2,25,empty)
-        cv2.createTrackbar("Q1","TrackBarsDouble",90,360,Qchange1)
+        cv2.createTrackbar("mass1","TrackBarsDouble",self.m1,25,empty)
+        cv2.createTrackbar("mass2","TrackBarsDouble",self.m2,25,empty)
+        cv2.createTrackbar("Q1","TrackBarsDouble",60,360,Qchange1)
         cv2.createTrackbar("Q2","TrackBarsDouble",90,360,Qchange2)
-        cv2.createTrackbar("g","TrackBarsDouble",98,300,empty)
+        cv2.createTrackbar("g","TrackBarsDouble",int(physic.g*10),300,empty)
         cv2.createTrackbar("Len1","TrackBarsDouble",200,500,empty)
         cv2.createTrackbar("Len2","TrackBarsDouble",200,500,empty)
         cv2.createTrackbar("tailLen","TrackBarsDouble",200,800,empty)
-        cv2.createTrackbar("TimeStep","TrackBarsDouble",5,100,empty)
-        cv2.createTrackbar("RealTime","TrackBarsDouble",0,1,empty)
-        cv2.createTrackbar("Stop","TrackBarsDouble",0,1,empty)
+        cv2.createTrackbar("TimeStep","TrackBarsDouble",int(self.timeStep*100),100,empty)
+        cv2.createTrackbar("RealTime","TrackBarsDouble",2,2,rSS)
+        cv2.createTrackbar("Stop","TrackBarsDouble",1,1,empty)
         cv2.setTrackbarMin("TimeStep","TrackBarsDouble",1)
         cv2.setTrackbarMin("mass1","TrackBarsDouble",1)
         cv2.setTrackbarMin("mass2","TrackBarsDouble",1)
@@ -277,7 +291,6 @@ class Body:
             
             xyL=[]
             while True:
-                
                 start = time.time()
                 
                 self.m1= cv2.getTrackbarPos("mass1","TrackBarsDouble") 
@@ -290,14 +303,20 @@ class Body:
                 ts = cv2.getTrackbarPos("TimeStep","TrackBarsDouble")/100
                 realOrStep = cv2.getTrackbarPos("RealTime","TrackBarsDouble")
                 
+                
                 if Close==0:
                     break  
               
+                
                 self=physic.XYdisplacementDoublePendelum(self)
 
                 self.cleanDrawDoublePendelum(space1,xyL,realOrStep)
                 
+                
                 cv2.imshow("space1",space1)
+                
+                
+                
                 
                 end = time.time()
                 if realOrStep==1:
@@ -324,6 +343,7 @@ class Body:
         cv2.waitKey(1)
         cv2.destroyAllWindows()
         
+    
 #------ Common Things -------
 # m = mass, (coorX,locaitonY) = instant coors
 #-----  Pendelum ------------
@@ -340,9 +360,9 @@ L1,L2=200,200
 Q1,Q2=90,90
 Q1V,Q2V=0,0
 
-
 def empty(a):
     pass    
+
 
 cv2.namedWindow("Select")
 cv2.resizeWindow("Select",350,90)
@@ -351,19 +371,26 @@ cv2.createTrackbar("Start","Select",0,1,empty)
 
 while True: 
     
+
     start = cv2.getTrackbarPos("Start","Select")
     monodouble= cv2.getTrackbarPos("MonoDouble","Select")
+
 
     if start==1:
         cv2.destroyWindow("Select")
         if  monodouble == 0:             
+            cv2.waitKey(1)
+            cv2.destroyAllWindows()
             b1 = Body(m, coorX,coorY,Qmax,Len,tailLen)
-        elif monodouble==1:
+        elif monodouble==1:    
+            cv2.waitKey(1)
+            cv2.destroyAllWindows()
             b2 = Body(m1,m2,L1,L2,Q1,Q2,Q1V,Q2V,tailLen)
+
         break
-    
     if cv2.waitKey(1) == ord('q'):
         break
 
 cv2.waitKey(1)
 cv2.destroyAllWindows()
+    
