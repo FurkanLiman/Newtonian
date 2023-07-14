@@ -165,7 +165,7 @@ class Body:
                 if realOrStep==1:
                     self.t+=0.04
                     spentTime= end-start # spent time in while loop
-                    print(spentTime)
+                    
                     if 0.04-spentTime<=0:
                         time.sleep(0)
                     else:
@@ -184,11 +184,14 @@ class Body:
         cv2.waitKey(1)
         cv2.destroyAllWindows()
 
-    def cleanDrawDoublePendelum(self,space,xyL):
+    def cleanDrawDoublePendelum(self,space,xyL,realOrStep):
         def drawPathPendelum(space,xyL):
+            a = [0,0,0]
             for i in xyL:
+                a[2]+=255//len(xyL)
                 x,y=i
-                space[int(y),int(x)]=255    
+                if x > 0 and x < space.shape[0] and y > 0 and  y < space.shape[1]:
+                    space[int(y),int(x)]=a
     
         space[:,:]=0
 
@@ -213,6 +216,14 @@ class Body:
         Q1degree= self.Q1*(180/math.pi)
         Q2degree= self.Q2*(180/math.pi)
         
+        xyL.append((self.x2+space.shape[0]//2,self.y2+space.shape[1]//2))
+        fark=len(xyL)-self.tailLen
+        try:
+            if fark>0:
+                for i in range(fark):
+                    xyL.remove(xyL[i])
+        except:
+            pass
         cv2.line(space,(500,500),(x1,y1),(200,200,255),1)
         cv2.line(space,(x1,y1),(x2,y2),(200,255,200),2)  
         cv2.circle(space,(x1,y1),5,(255,0,0),self.m1)
@@ -222,6 +233,11 @@ class Body:
         cv2.putText(space,f"Q2=  {Q2degree:.3f}",(20,40),cv2.FONT_HERSHEY_SIMPLEX,0.5,(255,255,255),1)
         cv2.putText(space,f"Q1V=  {self.Q1V:.3f}",(20,60),cv2.FONT_HERSHEY_SIMPLEX,0.5,(255,255,255),1)
         cv2.putText(space,f"Q2V=  {self.Q2V:.3f}",(20,80),cv2.FONT_HERSHEY_SIMPLEX,0.5,(255,255,255),1)
+        if realOrStep==1:
+            cv2.putText(space,"Real Time ON",(20,100),cv2.FONT_HERSHEY_SIMPLEX,0.5,(10,10,225),1)
+        elif realOrStep==0:
+            cv2.putText(space,"Time Step ON",(20,100),cv2.FONT_HERSHEY_SIMPLEX,0.5,(10,225,10),1)
+        
                  
     def doublePendelumAnimation(self):
         t=Body.t
@@ -239,41 +255,95 @@ class Body:
         timeStep=self.timeStep
 
         
-        xyL=[]
+       
 
-        while True:
-            start = time.time()
+        def empty(a):
+            pass    
+        def Qchange1(a):
+            Qs = a * math.pi / 180  
+            self.Q1=Qs
+        def Qchange2(a):
+            Qs = a * math.pi / 180  
+            self.Q2=Qs
+        cv2.namedWindow("TrackBars")
+        cv2.resizeWindow("TrackBars",640,500)
+        cv2.createTrackbar("mass1","TrackBars",2,25,empty)
+        cv2.createTrackbar("mass2","TrackBars",2,25,empty)
+        cv2.createTrackbar("Q1","TrackBars",90,360,Qchange1)
+        cv2.createTrackbar("Q2","TrackBars",90,360,Qchange2)
+        cv2.createTrackbar("g","TrackBars",98,300,empty)
+        cv2.createTrackbar("Len1","TrackBars",200,500,empty)
+        cv2.createTrackbar("Len2","TrackBars",200,500,empty)
+        cv2.createTrackbar("tailLen","TrackBars",200,800,empty)
+        cv2.createTrackbar("TimeStep","TrackBars",5,100,empty)
+        cv2.createTrackbar("RealTime","TrackBars",0,1,empty)
+        cv2.createTrackbar("Open_Close","TrackBars",1,1,empty)
+        Close=1
+        while Close==1:
             
-            cv2.imshow("space",space)
-            
-            self=physic.XYdisplacementDoublePendelum(self)
+            xyL=[]
+            while True:
+                start = time.time()
+                
+                self.m1= cv2.getTrackbarPos("mass1","TrackBars") 
+                self.m2= cv2.getTrackbarPos("mass2","TrackBars")
+                physic.g= cv2.getTrackbarPos("g","TrackBars")/10
+                self.L1 = cv2.getTrackbarPos("Len1","TrackBars")
+                self.L2 = cv2.getTrackbarPos("Len2","TrackBars")   
+                self.tailLen = cv2.getTrackbarPos("tailLen","TrackBars")
+                Close =cv2.getTrackbarPos("Open_Close","TrackBars")  
+                ts = cv2.getTrackbarPos("TimeStep","TrackBars")/100
+                realOrStep = cv2.getTrackbarPos("RealTime","TrackBars")
+                
+                if ts==0:
+                    ts=0.01
+                if self.m1==0:
+                    self.m1=1 
+                if self.m2==0:
+                    self.m2=1
+                if Close==0:
+                    break  
+                if physic.g==0:
+                    physic.g=0.1
+                if self.L1 < 4:
+                    self.L1=5
+                if self.L2 < 4:
+                    self.L2=5
+                if self.tailLen<10:
+                    self.tailLen=10 
+                
+                
+                self=physic.XYdisplacementDoublePendelum(self)
 
-            self.cleanDrawDoublePendelum(space,xyL)
-            
-            xyL.append((self.x2+space.shape[0]//2,self.y2+space.shape[1]//2))
-            
-            if len(xyL)>=tailLen:
-                xyL.remove(xyL[0])
-            
-            
-            t+=timeStep
-            time.sleep(timeStep)#sil bunu
-            end = time.time()
-            spentTime= end-start # spent time in while loop
-            
-            if timeStep-spentTime<=0:
-                time.sleep(0)
-            else:
-                time.sleep(timeStep-spentTime)   
-            
-            if cv2.waitKey(1) == ord('q'):
-                break
-            
+                self.cleanDrawDoublePendelum(space,xyL,realOrStep)
+                
+                
+                cv2.imshow("space",space)
+                
+                
+                
+                
+                end = time.time()
+                if realOrStep==1:
+                    self.timeStep=0.04
+                    self.t+=0.04
+                    spentTime= end-start # spent time in while loop
 
-        while True:
-            cv2.imshow("space",space)
-            if cv2.waitKey(1) == ord('q'):
-                break
+                    if 0.04-spentTime<=0:
+                        time.sleep(0)
+                    else:
+                        time.sleep(0.04-spentTime)   
+                elif realOrStep==0:
+                    self.timeStep=ts
+                    self.t+=self.timeStep
+                if cv2.waitKey(1) == ord('q'):
+                    break
+                
+
+            while True:
+                cv2.imshow("space",space)
+                if cv2.waitKey(1) == ord('q'):
+                    break
 
         cv2.waitKey(1)
         cv2.destroyAllWindows()
@@ -297,7 +367,7 @@ Q1V,Q2V=0,0
 
 
 while True: 
-    choice = "1"
+    choice = "2"
     #choice = input("FreeFall (1) or Pendelum (2) or Double Pendelum(3)= ")
 
     if choice=="1":
