@@ -14,9 +14,9 @@ def findPeriodPendelum(L):
     T=2*math.pi*math.sqrt((L/g))
     return T
 
-def XYdisplacementPendelum(body,Qmaks,t,L):
+def XYdisplacementPendelum(body,t,L):
     T = body.T
-    Q = Qmaks*math.cos((((2*math.pi)/T)*t))
+    Q = body.Qmax*math.cos((((2*math.pi)/T)*t))
     
     x=L*math.sin(Q)
     y=L*math.cos(Q)
@@ -25,56 +25,6 @@ def XYdisplacementPendelum(body,Qmaks,t,L):
     body.coorX=x
     body.coorY=y
     return body
-
-def XYdisplacementFreeFall(body,t):
-    timeStep= body.timeStep
-    x=body.coorX
-    y=body.coorY
-    m=body.mass
-    vbX=body.vbX
-    vbY=body.vbY
-    vx=body.vx
-    vy=body.vy
-    
-    vx=vbX
-    x+=timeStep*(vbX)
-    f = m * g
-    a = f/m
-    vy = vbY+a*t
-    vy2 = vy
-    vy1 = vbY+a*(t-timeStep)
-    y+=timeStep*((vy1+vy2)/2)
-    
-    body.coorX = x
-    body.coorY = y
-
-    body.vx = vx
-    body.vy = vy
-    
-
-    return body
-
-def drawRouteFreeFall(body,t,space):
-    timeStep= body.timeStep
-    pathXY=[]
-    x=body.coorX
-    y=body.coorY
-    m=body.mass
-    vbX=body.vbX
-    vbY=body.vbY
-    while True:
-        x+=timeStep*(vbX)
-        f = m * g
-        a = f/m
-        vy = vbY+a*t
-        vy2 = vy
-        vy1 = vbY+a*(t-timeStep)
-        y+=timeStep*((vy1+vy2)/2)
-        t+=timeStep
-        pathXY.append((x,y))
-        if y>=space.shape[0]*0.98:
-            break
-    return pathXY 
 
 def XYdisplacementDoublePendelum(body):
 

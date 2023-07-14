@@ -12,22 +12,12 @@ class Body:
     t=0
     timeStep= 0.05
     def __init__(self,*args):
-        # free fall
-        if len(args)==5:
-            mass, coorX, coorY, vb,vbAngle = args
-            vbAngle=-vbAngle
-            self.mass= mass
-            self.coorX = coorX
-            self.coorY = coorY
-            self.vb=vb
-            self.vbX,self.vbY= self.vbAngleCalculate(vb,vbAngle)
-            self.vx, self.vy= 0,0
-            self.freeFallAnimation()    
+        
         # pendelum
-        elif len(args)==6:
+        if len(args)==6:
             mass, coorX, coorY, Qmax, Len,tailLen = args
             self.Qmax= Qmax
-            self.Q=Qmax
+            self.Q=Qmax* math.pi / 180
             self.T = physic.findPeriodPendelum(Len)
             self.Len=Len
             self.tailLen=tailLen
@@ -62,86 +52,15 @@ class Body:
             self.y2=y2
             self.tailLen=tailLen
             self.doublePendelumAnimation()
-            
-    def cleanDrawFreeFall(self,space,pathXY,t):
-        def drawPathFreeFall(space,pathXY):
-            for i in pathXY:
-                x,y=i
-                x=int(x)
-                y=int(y)
-                if y<space.shape[0] and x<space.shape[1]:
-                    space[y,x]=255    
-        
-        space[:,:]=0
-        
-        V=int(math.sqrt((self.vx**2)+(self.vy**2)))
-        xint,yint,Vxint,Vyint = int(self.coorX),int(self.coorY),int(self.vx),int(self.vy)
-        for i in range(space.shape[1]//100):
-            space[(2*i)*100:(2*i+1)*100,int(space.shape[0]*0.98):space.shape[0]] = 255
-            space[(2*i+1)*100:(2*i+3)*100,int(space.shape[0]*0.98):space.shape[0]] = 125
-            space[int(space.shape[0]*0.98):space.shape[0],(2*i)*100:(2*i+1)*100] = 255
-            space[int(space.shape[0]*0.98):space.shape[0],(2*i+1)*100:(2*i+3)*100] = 125
-        cv2.putText(space,"100m",(20,int(space.shape[0]-5)),cv2.FONT_HERSHEY_SIMPLEX,0.5,(0),2)
-        cv2.putText(space,f"y={self.coorY:.3f} meter",(15,15),cv2.FONT_HERSHEY_SIMPLEX,0.5,(255,255,255))
-        cv2.putText(space,f"V={V:.3f} m/s",(15,30),cv2.FONT_HERSHEY_SIMPLEX,0.5,(255,255,255))
-        cv2.putText(space,f"t={t:.3f} s",(15,45),cv2.FONT_HERSHEY_SIMPLEX,0.5,(255,255,255))
-        cv2.arrowedLine(space,(xint,yint),(xint+Vxint,yint+Vyint),(255,0,0),3) # total-> blue
-        cv2.arrowedLine(space,(xint,yint),(xint,yint+Vyint),(0,255,0),3) # y arrow -> green
-        cv2.arrowedLine(space,(xint,yint),(xint+Vxint,yint),(0,0,255),3) # x arrow -> red
-        cv2.circle(space,(xint,yint),5,(0,0,255),self.mass)
-        
-        drawPathFreeFall(space,pathXY)  
-    
-    def vbAngleCalculate(self,vb,vbAngle):
-        vbRadianA = vbAngle * math.pi / 180
-        vbX=vb*math.cos(vbRadianA)
-        vbY=vb*math.sin(vbRadianA)
-        return vbX,vbY 
-    
-    def freeFallAnimation(self):    
-    
-        t= Body.t
-        timeStep= Body.timeStep
-        pathXY=physic.drawRouteFreeFall(self,t,space)
-        
-        while True:
-            start = time.time()
-            
-            cv2.imshow("space",space)
-            
-            if self.coorY>=space.shape[0]*0.98-r:
-                v=0
-                break
-
-            self =physic.XYdisplacementFreeFall(self,t)
-            self.cleanDrawFreeFall(space,pathXY,t)       
-            
-            t+=timeStep
-            end = time.time()
-            spentTime= end-start # spent time in while loop
-            
-            if timeStep-spentTime<=0:
-                time.sleep(0)
-            else:
-                time.sleep(timeStep-spentTime)
-            
-            if cv2.waitKey(1) == ord('q'):
-                break
-
-
-        while True:
-            cv2.imshow("space",space)
-            if cv2.waitKey(1) == ord('q'):
-                break
-
-        cv2.waitKey(1)
-        cv2.destroyAllWindows()
-          
-    def cleanDrawPendelum(self,originP,xyL,t):
+                    
+    def cleanDrawPendelum(self,originP,xyL,t,realOrStep):
         def drawPathPendelum(space,xyL):
+            a = [0,0,0]
             for i in xyL:
+                a[2]+=255//len(xyL)
                 x,y=i
-                space[int(y),int(x)]=255
+                if x > 0 and x < space.shape[0] and y > 0 and  y < space.shape[1]:
+                    space[int(y),int(x)]=a
         
         x=self.coorX
         y=self.coorY
@@ -151,8 +70,14 @@ class Body:
         Q = self.Q
         
         xyL.append((x,y))
-        if len(xyL)>self.tailLen:
-            xyL.remove(xyL[0])
+        
+        fark=len(xyL)-self.tailLen
+        try:
+            if fark>0:
+                for i in range(fark):
+                    xyL.remove(xyL[i])
+        except:
+            pass
             
         
         Qdegree = Q*(180/math.pi)
@@ -165,7 +90,7 @@ class Body:
             space[(2*i+1)*100:(2*i+3)*100,int(space.shape[0]*0.98):space.shape[0]] = 125
             space[int(space.shape[0]*0.98):space.shape[0],(2*i)*100:(2*i+1)*100] = 255
             space[int(space.shape[0]*0.98):space.shape[0],(2*i+1)*100:(2*i+3)*100] = 125
-        cv2.line(space,originP,(originP[0],(originP[1]+1)*L),(125,125,125),1)
+        cv2.line(space,originP,(originP[0],(originP[1]+1)*self.Len),(100,60,60),1)
         cv2.line(space,originP,(x,y),(255,255,255),3)
         cv2.circle(space,(x,y),5,(0,0,255),self.mass)
         cv2.putText(space,"100m",(20,int(space.shape[0]-5)),cv2.FONT_HERSHEY_SIMPLEX,0.5,(0),2)
@@ -173,39 +98,82 @@ class Body:
         cv2.putText(space,f"Q(Angle) =  {Qdegree:.3f}",(20,40),cv2.FONT_HERSHEY_SIMPLEX,0.5,(255,255,255),1)
         cv2.putText(space,f"a(accel.)=  {a:.3f}",(20,60),cv2.FONT_HERSHEY_SIMPLEX,0.5,(255,255,255),1)
         cv2.putText(space,f"t(time)  =  {t:.3f}",(20,80),cv2.FONT_HERSHEY_SIMPLEX,0.5,(255,255,255),1)
+        if realOrStep==1:
+            cv2.putText(space,"Real Time ON",(20,100),cv2.FONT_HERSHEY_SIMPLEX,0.5,(10,10,225),1)
+        elif realOrStep==0:
+            cv2.putText(space,"Time Step ON",(20,100),cv2.FONT_HERSHEY_SIMPLEX,0.5,(10,225,10),1)
         drawPathPendelum(space,xyL)
-     
+    
     def pendelumAnimation(self):
-        
-        Qmaks=self.Qmax
-        t=Body.t
+         
+    
+        def empty(a):
+            pass    
+        def Qchange(a):
+            Qs = a * math.pi / 180  
+            self.Qmax=Qs
+        cv2.namedWindow("TrackBars")
+        cv2.resizeWindow("TrackBars",640,360)
+        cv2.createTrackbar("mass","TrackBars",1,25,empty)
+        cv2.createTrackbar("Q","TrackBars",30,90,Qchange)
+        cv2.createTrackbar("g","TrackBars",98,300,empty)
+        cv2.createTrackbar("Len","TrackBars",400,1000,empty)
+        cv2.createTrackbar("tailLen","TrackBars",200,800,empty)
+        cv2.createTrackbar("TimeStep","TrackBars",5,100,empty)
+        cv2.createTrackbar("RealTime","TrackBars",0,1,empty)
+        cv2.createTrackbar("Open_Close","TrackBars",1,1,empty)
+        t=self.t
         timeStep= Body.timeStep
-       
-        xyL=[]
-        
-        originP=(space.shape[0]//2,0)
-        Qmaks = Qmaks * math.pi / 180
-        
-        while True:
-            start = time.time()
+        Close=1
+        while Close==1:
             
-            cv2.imshow("space",space)
-
-            self.T=physic.findPeriodPendelum(self.Len)
-            self=physic.XYdisplacementPendelum(self,Qmaks,t,self.Len)
-            self.cleanDrawPendelum(originP,xyL,t)
+            xyL=[]
             
-            t+=timeStep
-            end = time.time()
-            spentTime= end-start # spent time in while loop
+            originP=(space.shape[0]//2,0)
             
-            if timeStep-spentTime<=0:
-                time.sleep(0)
-            else:
-                time.sleep(timeStep-spentTime)   
-            
-            if cv2.waitKey(1) == ord('q'):
-                break
+            while True:
+                start = time.time()
+                
+                self.mass = cv2.getTrackbarPos("mass","TrackBars")              
+                physic.g = cv2.getTrackbarPos("g","TrackBars")/10
+                self.Len = cv2.getTrackbarPos("Len","TrackBars")
+                self.tailLen = cv2.getTrackbarPos("tailLen","TrackBars")
+                Close = cv2.getTrackbarPos("Open_Close","TrackBars")
+                Body.timeStep = cv2.getTrackbarPos("TimeStep","TrackBars")/100
+                realOrStep = cv2.getTrackbarPos("RealTime","TrackBars")
+                
+                if Body.timeStep==0:
+                    Body.timeStep=0.01
+                if self.mass==0:
+                    self.mass=1 
+                if Close==0:
+                    break  
+                if physic.g==0:
+                    physic.g=1
+                if self.Len < 4:
+                    self.Len=5
+                if self.tailLen<10:
+                    self.tailLen=10 
+             
+                self.T=physic.findPeriodPendelum(self.Len)
+                self=physic.XYdisplacementPendelum(self,self.t,self.Len)
+                self.cleanDrawPendelum(originP,xyL,self.t,realOrStep)
+                    
+                cv2.imshow("space",space)                
+                
+                end = time.time()
+                if realOrStep==1:
+                    self.t+=0.04
+                    spentTime= end-start # spent time in while loop
+                    print(spentTime)
+                    if 0.04-spentTime<=0:
+                        time.sleep(0)
+                    else:
+                        time.sleep(0.04-spentTime)   
+                elif realOrStep==0:
+                    self.t+=Body.timeStep
+                if cv2.waitKey(1) == ord('q'):
+                    break
 
 
         while True:
@@ -270,7 +238,6 @@ class Body:
         
         timeStep=self.timeStep
 
-        Q1dd,Q2dd=0,0
         
         xyL=[]
 
@@ -290,15 +257,15 @@ class Body:
             
             
             t+=timeStep
-            #time.sleep(timeStep)#sil bunu
+            time.sleep(timeStep)#sil bunu
             end = time.time()
             spentTime= end-start # spent time in while loop
-            """
+            
             if timeStep-spentTime<=0:
                 time.sleep(0)
             else:
                 time.sleep(timeStep-spentTime)   
-            """
+            
             if cv2.waitKey(1) == ord('q'):
                 break
             
@@ -313,36 +280,30 @@ class Body:
         
     
 #------ Common Things -------
-# m = mass, r = radius, (coorX,locaitonY) = instant coors
-#------ Free Fall -----------
-# Vb = initial velocity, vbAngle = initial velocity angle
+# m = mass, (coorX,locaitonY) = instant coors
 #-----  Pendelum ------------
 # Qmax=starting degree for pendelum, T = period L = rope lenght 
 
-#---Common variables---
-m,r=5,10
-#---Pendelum variables---
-Qmax, Len, tailLen = 30, 200, 200
-coorX,coorY=300,800
-#---double Pen-------
+
+#---Pendulum variables---
+m=5
+Qmax, Len, tailLen = 30, 400, 200
+coorX,coorY=200,900
+#---Double Pendulum-------
 m1,m2=2,2
 L1,L2=200,200
 Q1,Q2=90,90
 Q1V,Q2V=0,0
-#---Free fall variables---
-vb,vbAngle=80,45
 
 
 while True: 
-    choice = "3"
+    choice = "1"
     #choice = input("FreeFall (1) or Pendelum (2) or Double Pendelum(3)= ")
-    if choice == "1":
-        b1 = Body(m, coorX,coorY,vb,vbAngle)
-        break
-    elif choice=="2":
+
+    if choice=="1":
         b1 = Body(m, coorX,coorY,Qmax,Len,tailLen)
         break
-    elif choice=="3":
+    elif choice=="2":
         b1 = Body(m1,m2,L1,L2,Q1,Q2,Q1V,Q2V,tailLen)
         break
     else:
