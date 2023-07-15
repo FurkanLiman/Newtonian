@@ -400,7 +400,7 @@ cv2.resizeWindow("Select",350,90)
 cv2.createTrackbar("MonoDouble","Select",0,1,empty)
 cv2.createTrackbar("Start","Select",0,1,empty)
 
-while True: 
+while True:
     
 
     start = cv2.getTrackbarPos("Start","Select")
